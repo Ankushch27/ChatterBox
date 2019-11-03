@@ -75,7 +75,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private val phoneAuthCallbacks = object: PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-        override fun onVerificationCompleted(credential: PhoneAuthCredential?) {
+        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
             val code = credential?.smsCode
             codeEditText.setText(code)
             signInWithPhoneAuthCredential(credential)
@@ -85,7 +85,7 @@ class RegisterActivity : AppCompatActivity() {
             toast(exception.message!!)
         }
 
-        override fun onCodeSent(id: String?, token: PhoneAuthProvider.ForceResendingToken?) {
+        override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
             super.onCodeSent(id, token)
             progressBar.hide()
             verificationId = id
