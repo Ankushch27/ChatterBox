@@ -52,7 +52,7 @@ class ProfileActivity : AppCompatActivity() {
     private val databaseListener = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             val imgUrl = dataSnapshot.child("profile_image").value.toString()
-            Picasso.get().load(imgUrl).into(profileImageView)
+            Picasso.get().load(imgUrl).placeholder(R.drawable.profile_pic).into(profileImageView)
         }
 
         override fun onCancelled(p0: DatabaseError) {

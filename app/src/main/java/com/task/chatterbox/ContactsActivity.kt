@@ -19,7 +19,6 @@ import kotlinx.android.synthetic.main.activity_contacts.*
 class ContactsActivity : AppCompatActivity() {
 
     private lateinit var usersList: RecyclerView
-    private lateinit var toolbar: Toolbar
 
     private lateinit var query: DatabaseReference
     private lateinit var firebaseRecyclerAdapter: FirebaseRecyclerAdapter<User, ContactsViewHolder>
@@ -28,10 +27,7 @@ class ContactsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contacts)
 
-        toolbar = contacts_toolbar as Toolbar
-        setSupportActionBar(toolbar)
         supportActionBar?.title = "Contacts"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         query = FirebaseDatabase.getInstance().getReference("users")
 

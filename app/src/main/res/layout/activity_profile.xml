@@ -32,7 +32,7 @@
         android:id="@+id/change_profile_pic"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/camera_icon"
+        android:src="@drawable/ic_camera"
         app:layout_constraintBottom_toBottomOf="@+id/profileImageView"
         app:layout_constraintEnd_toEndOf="@+id/profileImageView"
         tools:ignore="ContentDescription" />

@@ -11,8 +11,6 @@ import kotlinx.android.synthetic.main.activity_chat.*
 
 class ChatActivity : AppCompatActivity() {
 
-    private lateinit var toolbar: Toolbar
-
     private val firebaseAuth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
@@ -22,9 +20,9 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        toolbar = main_toolbar as Toolbar
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = "Chatter Box"
+        contacts_fab.setOnClickListener {
+            startContactsActivity()
+        }
     }
 
     override fun onStart() {
@@ -46,9 +44,6 @@ class ChatActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         super.onOptionsItemSelected(item)
 
-        if(item?.itemId == R.id.option_contacts) {
-            startContactsActivity()
-        }
         if(item?.itemId == R.id.option_profile) {
             startProfileActivity()
         }
