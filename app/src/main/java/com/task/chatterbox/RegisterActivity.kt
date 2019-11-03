@@ -76,7 +76,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private val phoneAuthCallbacks = object: PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-            val code = credential?.smsCode
+            val code = credential.smsCode
             codeEditText.setText(code)
             signInWithPhoneAuthCredential(credential)
         }

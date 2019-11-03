@@ -27,12 +27,16 @@ fun Context.startRegisterActivity() =
 
 fun Context.startProfileActivity() =
     Intent(this, ProfileActivity::class.java).also {
-        it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(it)
     }
 
 fun Context.startChatActivity() =
     Intent(this, ChatActivity::class.java).also {
         it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(it)
+    }
+
+fun Context.startContactsActivity() =
+    Intent(this, ContactsActivity::class.java).also {
         startActivity(it)
     }
