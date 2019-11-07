@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
@@ -20,7 +20,7 @@ class ContactsActivity : AppCompatActivity() {
 
     private lateinit var usersList: RecyclerView
 
-    private lateinit var query: DatabaseReference
+    private lateinit var ref: DatabaseReference
     private lateinit var firebaseRecyclerAdapter: FirebaseRecyclerAdapter<User, ContactsViewHolder>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +29,7 @@ class ContactsActivity : AppCompatActivity() {
 
         supportActionBar?.title = "Contacts"
 
-        query = FirebaseDatabase.getInstance().getReference("users")
+        ref = FirebaseDatabase.getInstance().getReference("users")
 
         usersList = users_list
         usersList.setHasFixedSize(true)
@@ -40,7 +40,7 @@ class ContactsActivity : AppCompatActivity() {
         super.onStart()
 
         val options = FirebaseRecyclerOptions.Builder<User>()
-            .setQuery(query, User::class.java)
+            .setQuery(ref, User::class.java)
             .setLifecycleOwner(this)
             .build()
 
@@ -52,13 +52,23 @@ class ContactsActivity : AppCompatActivity() {
             }
 
             override fun onBindViewHolder(holder: ContactsViewHolder, position: Int, model: User) {
-                Picasso.get().load(model.profile_image).into(holder.user_image)
+                Picasso.get().load(model.profile_image).into(holder.profileImageView)
+                holder.usernameTextView.text = model.name
+                val userID = getRef(position).key
+                holder.itemView.setOnClickListener{
+                    startUserChatActivity {
+                        putString("userID", userID)
+                        putString("username", model.name)
+                        putString("profileImage", model.profile_image)
+                    }
+                }
             }
         }
         usersList.adapter = firebaseRecyclerAdapter
     }
 
     class ContactsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val user_image = itemView.findViewById<CircleImageView>(R.id.user_profile_pic)
-        }
+        val profileImageView: CircleImageView = itemView.findViewById(R.id.user_profile_pic)
+        val usernameTextView: TextView = itemView.findViewById(R.id.username)
+    }
 }

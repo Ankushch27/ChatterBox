@@ -12,12 +12,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ChatActivity"
-            android:launchMode="singleTop"/>
-        <activity android:name=".ProfileActivity"
-            android:parentActivityName=".ChatActivity"/>
-        <activity android:name=".ContactsActivity"
-            android:parentActivityName=".ChatActivity"/>
+        <activity android:name=".UserChatActivity"
+            android:parentActivityName=".ChatsActivity"/>
+        <activity
+            android:name=".ChatsActivity"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".ProfileActivity"
+            android:parentActivityName=".ChatsActivity" />
+        <activity
+            android:name=".ContactsActivity"
+            android:parentActivityName=".ChatsActivity" />
         <activity android:name=".RegisterActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

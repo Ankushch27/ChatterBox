@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_chat.*
 
-class ChatActivity : AppCompatActivity() {
+class ChatsActivity : AppCompatActivity() {
 
     private val firebaseAuth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()

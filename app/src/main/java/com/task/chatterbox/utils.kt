@@ -2,6 +2,7 @@ package com.task.chatterbox
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -18,25 +19,35 @@ fun ProgressBar.hide(){
     visibility = View.GONE
 }
 
-fun Context.startRegisterActivity() =
+fun Context.startRegisterActivity(extras: Bundle.() -> Unit = {}) =
     Intent(this, RegisterActivity::class.java).also {
+        it.putExtras(Bundle().apply(extras))
         it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(it)
     }
 
 
-fun Context.startProfileActivity() =
+fun Context.startProfileActivity(extras: Bundle.() -> Unit = {}) =
     Intent(this, ProfileActivity::class.java).also {
+        it.putExtras(Bundle().apply(extras))
         startActivity(it)
     }
 
-fun Context.startChatActivity() =
-    Intent(this, ChatActivity::class.java).also {
+fun Context.startChatActivity(extras: Bundle.() -> Unit = {}) =
+    Intent(this, ChatsActivity::class.java).also {
+        it.putExtras(Bundle().apply(extras))
         it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(it)
     }
 
-fun Context.startContactsActivity() =
+fun Context.startContactsActivity(extras: Bundle.() -> Unit = {}) =
     Intent(this, ContactsActivity::class.java).also {
+        it.putExtras(Bundle().apply(extras))
+        startActivity(it)
+    }
+
+fun Context.startUserChatActivity(extras: Bundle.() -> Unit = {}) =
+    Intent(this, UserChatActivity::class.java).also {
+        it.putExtras(Bundle().apply(extras))
         startActivity(it)
     }
