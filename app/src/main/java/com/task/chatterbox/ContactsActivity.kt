@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_contacts.*
@@ -30,6 +32,7 @@ class ContactsActivity : AppCompatActivity() {
         supportActionBar?.title = "Contacts"
 
         ref = FirebaseDatabase.getInstance().getReference("users")
+        ref.keepSynced(true)
 
         usersList = users_list
         usersList.setHasFixedSize(true)
@@ -52,15 +55,23 @@ class ContactsActivity : AppCompatActivity() {
             }
 
             override fun onBindViewHolder(holder: ContactsViewHolder, position: Int, model: User) {
-                Picasso.get().load(model.profile_image).into(holder.profileImageView)
-                holder.usernameTextView.text = model.name
+                val currentUserID = FirebaseAuth.getInstance().currentUser?.uid
                 val userID = getRef(position).key
-                holder.itemView.setOnClickListener{
-                    startUserChatActivity {
-                        putString("userID", userID)
-                        putString("username", model.name)
-                        putString("profileImage", model.profile_image)
+                if(userID != currentUserID) {
+                    Picasso.get().load(model.profile_image).networkPolicy(NetworkPolicy.OFFLINE, NetworkPolicy.NO_CACHE)
+                        .into(holder.profileImageView)
+                    holder.usernameTextView.text = model.name
+
+                    holder.itemView.setOnClickListener {
+                        startUserChatActivity {
+                            putString("userID", userID)
+                            putString("username", model.name)
+                            putString("profileImage", model.profile_image)
+                        }
                     }
+                } else {
+                    holder.profileImageView.visibility = View.GONE
+                    holder.usernameTextView.visibility = View.GONE
                 }
             }
         }

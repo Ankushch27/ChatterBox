@@ -12,4 +12,5 @@
     <string name="profile">Profile</string>
     <string name="message">Type message here</string>
     <string name="send">Send</string>
+    <string name="send_image">Send Image</string>
 </resources>

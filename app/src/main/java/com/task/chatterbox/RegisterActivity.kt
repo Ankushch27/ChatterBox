@@ -24,6 +24,8 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        ref.keepSynced(true)
+
         register_button.setOnClickListener {
             validatePhone()
         }

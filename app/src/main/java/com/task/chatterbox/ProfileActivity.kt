@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_profile.*
@@ -31,7 +32,8 @@ class ProfileActivity : AppCompatActivity() {
         val currentUser: FirebaseUser? = firebaseAuth.currentUser
         val userID = currentUser?.uid
 
-        val ref = ref.child(userID!!)
+        ref = ref.child(userID!!)
+        ref.keepSynced(true)
         ref.addValueEventListener(databaseListener)
 
         change_profile_pic.setOnClickListener {
@@ -41,18 +43,13 @@ class ProfileActivity : AppCompatActivity() {
         next_button.setOnClickListener {
             saveUsername(userID)
         }
-
-        logout_button.setOnClickListener {
-            firebaseAuth.signOut()
-            finish()
-            startRegisterActivity()
-        }
     }
 
     private val databaseListener = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             val imgUrl = dataSnapshot.child("profile_image").value.toString()
-            Picasso.get().load(imgUrl).placeholder(R.drawable.profile_pic).into(profileImageView)
+            Picasso.get().load(imgUrl).networkPolicy(NetworkPolicy.OFFLINE, NetworkPolicy.NO_CACHE)
+                .placeholder(R.drawable.profile_pic).into(profileImageView)
         }
 
         override fun onCancelled(p0: DatabaseError) {
@@ -98,8 +95,7 @@ class ProfileActivity : AppCompatActivity() {
                 val resultUri = result.uri
                 val currentUser: FirebaseUser? = firebaseAuth.currentUser
                 val userID = currentUser?.uid
-                val filepath =
-                    storageRef.child("profile_images/${userID}").child("profile_image.jpg")
+                val filepath = storageRef.child("profile_images/${userID}").child("profile_image.jpg")
                 filepath.putFile(resultUri).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         filepath.downloadUrl.addOnSuccessListener { resultUri ->
