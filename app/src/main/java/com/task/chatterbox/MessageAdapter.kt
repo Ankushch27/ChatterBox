@@ -42,13 +42,12 @@ class MessageAdapter(private val userMessagesList: MutableList<Messages>) : Recy
         val messageType = messages.type
 
         ref = FirebaseDatabase.getInstance().getReference("users").child(fromUserID!!)
-        ref.keepSynced(true)
+//        ref.keepSynced(true)
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.hasChild("profile_image")) {
                     val receiverImage = dataSnapshot.child("profile_image").value.toString()
-                    Picasso.get().load(receiverImage).networkPolicy(NetworkPolicy.OFFLINE, NetworkPolicy.NO_CACHE)
-                        .placeholder(R.drawable.profile_pic).into(holder.profileImageView)
+                    Picasso.get().load(receiverImage).placeholder(R.drawable.profile_pic).into(holder.profileImageView)
                 }
             }
 
@@ -67,13 +66,11 @@ class MessageAdapter(private val userMessagesList: MutableList<Messages>) : Recy
         } else if(messageType.equals("image")){
             if(fromUserID == senderID){
                 holder.senderMessageImage.visibility = View.VISIBLE
-                Picasso.get().load(messages.message).networkPolicy(NetworkPolicy.OFFLINE, NetworkPolicy.NO_CACHE)
-                    .into(holder.senderMessageImage)
+                Picasso.get().load(messages.message).into(holder.senderMessageImage)
             } else {
                 holder.profileImageView.visibility = View.VISIBLE
                 holder.receiverMessageImage.visibility = View.VISIBLE
-                Picasso.get().load(messages.message).networkPolicy(NetworkPolicy.OFFLINE, NetworkPolicy.NO_CACHE)
-                    .into(holder.receiverMessageImage)
+                Picasso.get().load(messages.message).into(holder.receiverMessageImage)
             }
         } else if(messageType.equals("document")){
             if(fromUserID == senderID){

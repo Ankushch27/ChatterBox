@@ -7,6 +7,7 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.auth.*
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.activity_register.*
 import java.util.concurrent.TimeUnit
 
@@ -24,7 +25,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        ref.keepSynced(true)
+//        ref.keepSynced(true)
 
         register_button.setOnClickListener {
             validatePhone()
@@ -116,8 +117,17 @@ class RegisterActivity : AppCompatActivity() {
     private fun saveUserDetails(userID: String?) {
         val phone = phoneEditText.text.toString().trim()
         ref.child(userID!!).child("phone").setValue(phone).addOnCompleteListener {
-            finish()
-            startProfileActivity()
+
+            FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener{
+                if(it.isSuccessful) {
+                    val currentUserID = firebaseAuth.currentUser?.uid
+                    val token = it.result?.token
+                    ref.child(currentUserID!!).child("device_token").setValue(token).addOnSuccessListener {
+                        finish()
+                        startProfileActivity()
+                    }
+                }
+            }
         }
     }
 }

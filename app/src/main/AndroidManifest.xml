@@ -13,8 +13,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".ChatterBox">
+
+        <service
+            android:name=".FirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <activity android:name=".UserChatActivity"
-            android:parentActivityName=".ChatsActivity"/>
+            android:parentActivityName=".ChatsActivity">
+            <intent-filter>
+                <action android:name="ChatterBox_TARGET_NOTIFICATION"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ChatsActivity"
             android:launchMode="singleTop" />

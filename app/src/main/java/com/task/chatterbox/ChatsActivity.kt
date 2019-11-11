@@ -27,7 +27,7 @@ class ChatsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chats)
 
         ref = FirebaseDatabase.getInstance().getReference("users")
-        ref.keepSynced(true)
+//        ref.keepSynced(true)
 
         chatsList = chats_list_recyclerView
         chatsList.setHasFixedSize(true)

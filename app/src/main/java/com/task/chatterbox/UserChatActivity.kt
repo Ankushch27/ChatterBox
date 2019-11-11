@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -55,12 +54,12 @@ class UserChatActivity : AppCompatActivity() {
         currentUserID = firebaseAuth.currentUser?.uid.toString()
         userID = intent.getStringExtra("userID")
         ref = FirebaseDatabase.getInstance().reference
-        ref.keepSynced(true)
+//        ref.keepSynced(true)
+
         setupActionBar()
-
         setupRecyclerView()
-
         loadMessages()
+
         sendImageView.setOnClickListener {
             sendMessage()
         }
@@ -174,53 +173,6 @@ class UserChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendDocMessage(docUri: Uri?) {
-        val senderRef = "messages/$currentUserID/$userID"
-        val receiverRef = "messages/$userID/$currentUserID"
-        val messagePushID = ref.child("messages").child(currentUserID).child(userID).push().key
-        val docRef = storageRef.child("message_documents").child("$messagePushID.file")
-        docRef.putFile(docUri!!).addOnCompleteListener{ task ->
-            if(task.isSuccessful){
-                docRef.downloadUrl.addOnSuccessListener { downloadUrl ->
-                    val messageBody = Messages(downloadUrl.toString(), messagePushID, currentUserID, "document")
-
-                    val messageUserMap = HashMap<String, Messages>()
-                    messageUserMap["$senderRef/$messagePushID"] = messageBody
-                    messageUserMap["$receiverRef/$messagePushID"] = messageBody
-
-                    ref.updateChildren(messageUserMap as Map<String, Any>).addOnCompleteListener{
-                        if(it.isSuccessful) {
-//                            upload_progressBar.hide()
-                            toast("Document upload successful")
-                        }
-                    }
-                }
-            }
-        }.addOnProgressListener {
-            val progress = (100.0 * it.bytesTransferred)/it.totalByteCount
-        }
-    }
-
-    private fun loadMessages() {
-        ref.child("messages").child(currentUserID).child(userID).addChildEventListener(
-            object: ChildEventListener {
-                override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
-                    val messages = dataSnapshot.getValue(Messages::class.java)
-                    userMessageList.add(messages!!)
-                    messageAdapter.notifyDataSetChanged()
-                }
-
-                override fun onCancelled(p0: DatabaseError) {}
-
-                override fun onChildMoved(p0: DataSnapshot, p1: String?) {}
-
-                override fun onChildChanged(p0: DataSnapshot, p1: String?) {}
-
-                override fun onChildRemoved(p0: DataSnapshot) {}
-            }
-        )
-    }
-
     private fun sendMessage() {
         val messageText = messageEditText.text.toString().trim()
 
@@ -235,7 +187,15 @@ class UserChatActivity : AppCompatActivity() {
             messageUserMap["$senderRef/$messagePushID"] = messageBody
             messageUserMap["$receiverRef/$messagePushID"] = messageBody
             messageEditText.setText("")
-            ref.updateChildren(messageUserMap as Map<String, Any>)
+            ref.updateChildren(messageUserMap as Map<String, Any>).addOnCompleteListener{task ->
+                if(task.isSuccessful) {
+                    val notificationMap = HashMap<String, String>()
+                    notificationMap["from"] = currentUserID
+                    notificationMap["type"] = "message"
+
+                    ref.child("notifications").child(userID).push().setValue(notificationMap)
+                }
+            }
         }
     }
 
@@ -266,5 +226,51 @@ class UserChatActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun sendDocMessage(docUri: Uri?) {
+        val senderRef = "messages/$currentUserID/$userID"
+        val receiverRef = "messages/$userID/$currentUserID"
+        val messagePushID = ref.child("messages").child(currentUserID).child(userID).push().key
+        val docRef = storageRef.child("message_documents").child("$messagePushID.file")
+        docRef.putFile(docUri!!).addOnCompleteListener{ task ->
+            if(task.isSuccessful){
+                docRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+                    val messageBody = Messages(downloadUrl.toString(), messagePushID, currentUserID, "document")
+
+                    val messageUserMap = HashMap<String, Messages>()
+                    messageUserMap["$senderRef/$messagePushID"] = messageBody
+                    messageUserMap["$receiverRef/$messagePushID"] = messageBody
+
+                    ref.updateChildren(messageUserMap as Map<String, Any>).addOnCompleteListener{
+                        if(it.isSuccessful) {
+                            toast("Document upload successful")
+                        }
+                    }
+                }
+            }
+        }.addOnProgressListener {
+            val progress = (100.0 * it.bytesTransferred)/it.totalByteCount
+        }
+    }
+
+    private fun loadMessages() {
+        ref.child("messages").child(currentUserID).child(userID).addChildEventListener(
+            object: ChildEventListener {
+                override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+                    val messages = dataSnapshot.getValue(Messages::class.java)
+                    userMessageList.add(messages!!)
+                    messageAdapter.notifyDataSetChanged()
+                }
+
+                override fun onCancelled(p0: DatabaseError) {}
+
+                override fun onChildMoved(p0: DataSnapshot, p1: String?) {}
+
+                override fun onChildChanged(p0: DataSnapshot, p1: String?) {}
+
+                override fun onChildRemoved(p0: DataSnapshot) {}
+            }
+        )
     }
 }
